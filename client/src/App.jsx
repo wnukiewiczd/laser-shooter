@@ -1,15 +1,8 @@
-import './App.css';
+import "./App.css";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
-  return (
-    <div className="">
-      <header className="text-left">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-      </header>
-    </div>
-  );
+  return <LoginPage />;
 }
 
 export default App;
