@@ -1,32 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 
 const LoginPage = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/check-session", {
+        withCredentials: true,
+        credentials: "include",
+      })
+      .then((response) => {
+        if (response.data.user) {
+          navigate("/dashboard");
+        }
+      })
+      .catch((err) => console.log(err));
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/login", {
-        login,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/login",
+        {
+          login,
+          password,
+        },
+        { withCredentials: true, credentials: "include" }
+      );
 
-      setMessage(response.data.message || "");
       setLoading(false);
+      if (response.status === 200) {
+        navigate("/dashboard");
+      }
     } catch (error) {
       setLoading(false);
-
-      if (error.response) {
-        setMessage(error.response.data.message || "Authentication failed");
-      } else {
-        setMessage("An error occurred, please try again later");
-      }
+      console.error(error.response || "Something went wrong");
     }
   };
 
@@ -79,7 +96,6 @@ const LoginPage = () => {
             Zaloguj się
           </button>
         </form>
-        {message && <div>{message}</div>}
       </div>
     </div>
   );
