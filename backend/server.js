@@ -14,12 +14,17 @@ const port = process.env.SERVER_PORT || 5000;
 
 // Middleweare
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST'],
+}));
 
 app.use(session({
     secret: process.env.SECRET_KEY || "SUPERSECRET",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
         maxAge: 60 * 60 * 1000, // 1 Hour session
         secure: false
@@ -37,11 +42,13 @@ app.post('/login', async (req, res) => {
     try {
         const { status, message, user } = await userAuthenticator.authenticateUser(login, password);
 
+
         if (user) {
             req.session.user = {
                 id: user.id,
                 login: user.login
             };
+            req.session.save();
         }
 
         res.status(status).json({ message });
@@ -62,8 +69,8 @@ app.post('/logout', (req, res) => {
 
 app.get('/check-session', (req, res) => {
     if (!req.session.user) {
-        return res.status(401).json({ message: 'You are not logged in!' });
+        return res.status(401).json({ message: 'You are not authorized' });
     }
 
-    res.status(200).json({ message: 'Welcome to the protected route!', user: req.session.user });
+    res.status(200).json({ message: 'You are authorized', user: req.session.user });
 });
