@@ -3,8 +3,11 @@ const session = require('express-session');
 const cors = require('cors');
 require('dotenv').config();
 
-
-const userAuthenticator = require('./authentication/authentication');
+const logout = require('./api/logout');
+const checkSession = require('./api/check-session');
+const login = require('./api/login');
+const getSessionUser = require('./api/get-session-user');
+const listUserPlayers = require('./api/list-user-players');
 
 const app = express();
 
@@ -36,41 +39,16 @@ app.listen(port, () => {
     console.log(`Server running on ${protocol}://${host}:${port}`);
 });
 
-app.post('/login', async (req, res) => {
-    const { login, password } = req.body;
+app.post('/login', login);
+app.post('/logout', logout);
+app.get('/check-session', checkSession);
+app.get('/getSessionUser', getSessionUser);
 
+app.post('/getPlayers', async (req, res) => {
     try {
-        const { status, message, user } = await userAuthenticator.authenticateUser(login, password);
-
-
-        if (user) {
-            req.session.user = {
-                id: user.id,
-                login: user.login
-            };
-            req.session.save();
-        }
-
-        res.status(status).json({ message });
+        const players = await listUserPlayers(req, res);  // Pass the table name
+        return res.status(200).json(players);
     } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || 'Something went wrong' });
+        return res.status(500).json({ message: 'Problem with players' });
     }
-});
-
-app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ message: 'Failed to log out' });
-        }
-
-        res.status(200).json({ message: 'Logged out successfully' });
-    });
-});
-
-app.get('/check-session', (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ message: 'You are not authorized' });
-    }
-
-    res.status(200).json({ message: 'You are authorized', user: req.session.user });
 });

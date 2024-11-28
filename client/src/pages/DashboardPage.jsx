@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import { Link } from "react-router";
 
-const DashboardPage = () => {
+const DashboardPage = ({ sessionUser }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,16 +28,27 @@ const DashboardPage = () => {
   };
 
   const tabs = [
-    { id: 1, name: "Graj", onClick: () => alert("Dashboard clicked") },
-    { id: 2, name: "Ustawienia", onClick: () => alert("Settings clicked") },
+    {
+      id: 1,
+      name: "Graj",
+      linkTo: "",
+      onClick: () => alert("Dashboard clicked"),
+    },
+    {
+      id: 2,
+      name: "Ustawienia",
+      linkTo: "",
+      onClick: () => alert("Settings clicked"),
+    },
     {
       id: 3,
-      name: "Zarządzaj profilami",
-      onClick: () => alert("Settings clicked"),
+      name: "Lista graczy",
+      linkTo: "/players",
     },
     {
       id: 4,
       name: "Statystyki",
+      linkTo: "",
       onClick: () => alert("Notifications clicked"),
     },
     { id: 5, name: "Wyloguj się", onClick: handleLogout },
@@ -45,18 +57,19 @@ const DashboardPage = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-blue-400 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">
+        <h2 className="text-3xl font-bold text-center text-gray-800">
           Point Tag
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-4 flex flex-col">
           {tabs.map((tab) => (
-            <button
+            <Link
               key={tab.id}
+              to={tab.linkTo}
+              className="w-full text-center px-4 py-2 text-gray-700 bg-blue-100 rounded-md hover:bg-blue-200 focus:ring-4 focus:ring-blue-300"
               onClick={tab.onClick}
-              className="w-full px-4 py-2 text-gray-700 bg-blue-100 rounded-md hover:bg-blue-200 focus:ring-4 focus:ring-blue-300"
             >
               {tab.name}
-            </button>
+            </Link>
           ))}
         </div>
       </div>
