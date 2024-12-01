@@ -31,14 +31,12 @@ const DashboardPage = ({ sessionUser }) => {
     {
       id: 1,
       name: "Graj",
-      linkTo: "",
-      onClick: () => alert("Dashboard clicked"),
+      linkTo: "/play",
     },
     {
       id: 2,
       name: "Ustawienia",
-      linkTo: "",
-      onClick: () => alert("Settings clicked"),
+      linkTo: "/settings",
     },
     {
       id: 3,
