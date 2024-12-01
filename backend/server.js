@@ -8,6 +8,8 @@ const checkSession = require('./api/check-session');
 const login = require('./api/login');
 const getSessionUser = require('./api/get-session-user');
 const listUserPlayers = require('./api/list-user-players');
+const getUserSettings = require('./api/get-user-settings');
+const updateUserSettings = require('./api/update-user-settings');
 
 const app = express();
 
@@ -43,6 +45,9 @@ app.post('/login', login);
 app.post('/logout', logout);
 app.get('/check-session', checkSession);
 app.get('/getSessionUser', getSessionUser);
+
+app.post('/getUserSettings', getUserSettings);
+app.post('/updateUserSettings', updateUserSettings);
 
 app.post('/getPlayers', async (req, res) => {
     try {

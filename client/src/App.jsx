@@ -6,6 +6,9 @@ import { useNavigate } from "react-router";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import PlayersPage from "./pages/PlayersPage";
+import SettingsPage from "./pages/SettingsPage";
+import PlayPage from "./pages/PlayPage";
+import GamePage from "./pages/GamePage";
 
 function App() {
   const navigate = useNavigate();
@@ -45,9 +48,18 @@ function App() {
         element={<DashboardPage sessionUser={sessionUser} />}
       />
       <Route path="/login" element={<LoginPage />} sessionUser={sessionUser} />
+
+      <Route path="/play" element={<PlayPage sessionUser={sessionUser} />} />
+      <Route path="/game" element={<GamePage sessionUser={sessionUser} />} />
+
       <Route
         path="/players"
         element={<PlayersPage sessionUser={sessionUser} />}
+      />
+
+      <Route
+        path="/settings"
+        element={<SettingsPage sessionUser={sessionUser} />}
       />
     </Routes>
   );
