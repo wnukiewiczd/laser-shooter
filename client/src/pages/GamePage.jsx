@@ -1,11 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
+import * as mqtt from "mqtt";
 
 export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [remainingTime, setRemainingTime] = useState(30);
   const { player } = location.state || null;
+
+  // const [client, setClient] = useState(null);
+  // const mqttConnect = (host, mqttOption) => {
+  //   setClient(mqtt.connect(host, mqttOption));
+  // };
+  // useEffect(() => {
+  //   if (client) {
+  //     console.log(client);
+  //     client.on("connect", () => {
+  //       setConnectStatus("Connected");
+  //     });
+  //     client.on("error", (err) => {
+  //       console.error("Connection error: ", err);
+  //       client.end();
+  //     });
+  //     client.on("reconnect", () => {
+  //       setConnectStatus("Reconnecting");
+  //     });
+  //     client.on("message", (topic, message) => {
+  //       const payload = { topic, message: message.toString() };
+  //       setPayload(payload);
+  //     });
+  //   }
+  // }, [client]);
 
   useEffect(() => {
     if (!player) {
