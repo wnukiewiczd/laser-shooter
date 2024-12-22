@@ -1,12 +1,50 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
-import * as mqtt from "mqtt";
+import mqtt from "mqtt";
 
 export default function GamePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [remainingTime, setRemainingTime] = useState(30);
   const { player } = location.state || null;
+
+  const [client, setClient] = useState(null);
+  const [clientStatus, setClientStatus] = useState("Disconnected");
+
+  useEffect(() => {
+    // Connect to the MQTT broker
+    const client = mqtt.connect("mqtt://192.168.4.2:1883");
+
+    // Subscribe to topics
+    client.on("connect", () => {
+      client.subscribe("application");
+      setClientStatus("Connected");
+    });
+
+    client.on("error", (err) => {
+      setClientStatus("Disconnect");
+    });
+
+    // Handle incoming messages
+    client.on("message", (topic, message) => {
+      const msg = message.toString();
+      if (topic === "application" && msg === "target_hit") {
+      }
+    });
+
+    setClient(client);
+
+    // Cleanup on component unmount
+    return () => {
+      client.end();
+    };
+  }, []);
+
+  const sendCommand = (command) => {
+    if (client && clientStatus === "Connected") {
+      client.publish("application", command);
+    }
+  };
 
   // const [client, setClient] = useState(null);
   // const mqttConnect = (host, mqttOption) => {

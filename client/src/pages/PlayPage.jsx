@@ -2,11 +2,52 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import mqtt from "mqtt";
 
 export default function PlayPage({ sessionUser }) {
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+
+  const [client, setClient] = useState(null);
+  const [clientStatus, setClientStatus] = useState("Disconnected");
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Connect to the MQTT broker
+    const client = mqtt.connect("mqtt://192.168.4.2:1883");
+
+    // Subscribe to topics
+    client.on("connect", () => {
+      client.subscribe("application");
+      setClientStatus("Connected");
+    });
+
+    client.on("error", (err) => {
+      setClientStatus("Disconnect");
+    });
+
+    // Handle incoming messages
+    client.on("message", (topic, message) => {
+      const msg = message.toString();
+      if (topic === "application" && msg === "response_from_start_game") {
+        navigate("/game", { state: { player: selectedPlayer } });
+      }
+    });
+
+    setClient(client);
+
+    // Cleanup on component unmount
+    return () => {
+      client.end();
+    };
+  }, []);
+
+  const sendCommand = (command) => {
+    if (client && clientStatus === "Connected") {
+      client.publish("application", command);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +76,7 @@ export default function PlayPage({ sessionUser }) {
 
   const handleStartButton = (e) => {
     if (selectedPlayer) {
-      navigate("/game", { state: { player: selectedPlayer } });
+      sendCommand("start_game");
     } else {
       alert("Proszę wybrać gracza!");
       console.log(selectedPlayer);

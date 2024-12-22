@@ -25,6 +25,14 @@ def on_message(client, userdata, message):
         print("Cel 3 trafiony")
         playerScore = playerScore + 1
         start(client)
+    elif message.topic == "application" and message.payload.decode() == "start_game":
+        start(client)
+        client.publish("application", "response_from_start_game")
+    elif message.topic == "application" and message.payload.decode() == "stop_game":
+        stop(client)
+    elif message.topic == "application" and message.payload.decode() == "finish_game":
+        stop(client)
+        # DODAJ LOGIKE ZAPISUJACA WYNIK DO BAZY
 
 # Funkcja start losująca Wemosa i wysyłająca wiadomość
 def start(client):
@@ -53,6 +61,8 @@ client.connect("192.168.4.2", 1883, 60)
 client.subscribe("wemos1/lightRead")
 client.subscribe("wemos2/lightRead")
 client.subscribe("wemos3/lightRead")
+
+client.subscribe("application/game")
 
 # Start pętli odbierania wiadomości
 client.loop_start()
