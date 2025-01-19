@@ -4,43 +4,53 @@ import paho.mqtt.client as mqtt
 # Zmienna globalna przechowująca wylosowany Wemos
 selected_wemos = None
 
-#Zmienna globalna przechowująca wynik gracza
+# Zmienna globalna przechowująca wynik gracza
 playerScore = 0
 
 # Funkcja obsługi wiadomości
 def on_message(client, userdata, message):
     global playerScore
+    global selected_wemos
+
     # Wemos1 został trafiony
     if message.topic == "wemos1/lightRead" and message.payload.decode() == "hit" and selected_wemos == "Wemos1":
         print("Cel 1 trafiony")
-        playerScore = playerScore + 1
+        playerScore += 1
         start(client)
+
     # Wemos2 został trafiony
     elif message.topic == "wemos2/lightRead" and message.payload.decode() == "hit" and selected_wemos == "Wemos2":
         print("Cel 2 trafiony")
-        playerScore = playerScore + 1
+        playerScore += 1
         start(client)
+
     # Wemos3 został trafiony
     elif message.topic == "wemos3/lightRead" and message.payload.decode() == "hit" and selected_wemos == "Wemos3":
         print("Cel 3 trafiony")
-        playerScore = playerScore + 1
+        playerScore += 1
         start(client)
 
 # Funkcja start losująca Wemosa i wysyłająca wiadomość
 def start(client):
     global selected_wemos
+
     # Losowanie Wemosa
     selected_wemos = random.choice(["Wemos1", "Wemos2", "Wemos3"])
+
     # Ustawienie odpowiedniego tematu
-    topic = f"raspberry/{selected_wemos}/ledStrip" 
+    topic = f"raspberry/{selected_wemos}/ledStrip"
+
     # Wysłanie wiadomości "turnOnGreen"
     client.publish(topic, "turnOnGreen")
     print(f"Wysłano wiadomość 'turnOnGreen' do {selected_wemos} na temat {topic}")
 
-    # Funkcja start losująca Wemosa i wysyłająca wiadomość
+# Funkcja stop resetująca grę
 def stop(client):
+    global selected_wemos
+    global playerScore
+
     client.publish("raspberry/WemosAll/ledStrip", "stop")
-    print(f"Wysłano wiadomość 'stop' do wszystkich wemosów")
+    print("Wysłano wiadomość 'stop' do wszystkich Wemosów")
     selected_wemos = None
     playerScore = 0
 
