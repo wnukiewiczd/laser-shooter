@@ -37,12 +37,12 @@ def on_message(client, userdata, message):
         selected_wemos = None
         start(client)
     elif message.topic == "application/raspberry/gameEnd":
-        stop(client)
         client.publish("raspberry/application/playerScore", f"{playerScore}")
         client.publish("raspberry/Wemos1/robot", "robotStop")
-    elif message.topic == "application/raspberry/gameEndForce":
         stop(client)
+    elif message.topic == "application/raspberry/gameEndForce":
         client.publish("raspberry/Wemos1/robot", "robotStop")
+        stop(client)
     elif message.topic == "application/raspberry/runDrivingRobot":
         client.publish("raspberry/Wemos1/robot", "robotRun")
 

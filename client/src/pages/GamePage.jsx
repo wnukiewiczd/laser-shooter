@@ -4,18 +4,12 @@ import mqtt from "mqtt";
 import axios from "axios";
 
 export default function GamePage() {
-  // const MQTT_SERVER_OPTIONS = {
-  //   clientId: `mqttjs_${Math.random().toString(16).substr(2, 8)}`,
-  //   username: "admin",
-  //   password: "Admin123",
-  //   clean: true,
-  // };
-  const MQTT_SERVER_HOST = "mqtt://192.168.4.2:1883";
+  const MQTT_SERVER_HOST = "ws://192.168.4.2:9001";
   const MQTT_SERVER_OPTIONS = {
     clientId: `mqttjs_${Math.random().toString(16).substr(2, 8)}`,
     clean: true,
   };
-  const ROUND_TIME = 5;
+  const ROUND_TIME = 60;
   const PRE_ROUND_TIME = 5;
   const DRIVING_ROBOT_START_TIME_BEFORE_END = 20;
   const TARGET_TIMEOUT_DURATION = 3000;
@@ -32,6 +26,7 @@ export default function GamePage() {
   const [currentHit, setCurrentHit] = useState(null);
   const [playerScore, setPlayerScore] = useState(0);
   const targetTimeoutRef = useRef(null);
+  const gameStarted = useRef(false);
 
   const mqttConnect = (host, mqttOption) => {
     setClient(mqtt.connect(host, mqttOption));
@@ -54,13 +49,6 @@ export default function GamePage() {
         setConnectStatus("Connected");
         mqttSub({ topic: "raspberry/application/targetHit", qos: 1 });
         mqttSub({ topic: "raspberry/application/playerScore", qos: 1 });
-
-        // Wyślij wiadomość o starcie gry do maliny
-        mqttPublish({
-          topic: "application/raspberry/gameStart",
-          payload: "",
-          qos: 1,
-        });
       });
       client.on("error", (err) => {
         console.error("Connection error: ", err);
@@ -123,7 +111,7 @@ export default function GamePage() {
         .post(
           "http://localhost:5000/newScoreRecord",
           {
-            playerId: player,
+            playerId: player.id,
             score,
             gameTime: ROUND_TIME,
           },
@@ -156,6 +144,16 @@ export default function GamePage() {
       }, 1000);
 
       return () => clearInterval(interval);
+    }
+
+    if (!gameStarted.current) {
+      gameStarted.current = true;
+      // Wyślij wiadomość o starcie gry do maliny
+      mqttPublish({
+        topic: "application/raspberry/gameStart",
+        payload: "",
+        qos: 1,
+      });
     }
 
     if (remainingTime <= 0) {
