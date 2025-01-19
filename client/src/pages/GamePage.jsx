@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import mqtt from "mqtt";
+import axios from "axios";
 
 export default function GamePage() {
   // const MQTT_SERVER_OPTIONS = {
@@ -29,11 +30,12 @@ export default function GamePage() {
   const [connectStatus, setConnectStatus] = useState(null);
 
   const [currentHit, setCurrentHit] = useState(null);
-  const [playerScore, setPlayerScore] = useState(null);
+  const [playerScore, setPlayerScore] = useState(0);
   const targetTimeoutRef = useRef(null);
 
   const mqttConnect = (host, mqttOption) => {
     setClient(mqtt.connect(host, mqttOption));
+    console.log("Connecting to mqtt broker");
   };
 
   const mqttDisconnect = () => {
@@ -116,8 +118,26 @@ export default function GamePage() {
       mqttDisconnect();
       const score = parseInt(message);
       setPlayerScore(score);
-      // Tutaj axios http post, zeby zapisac do bazy dane
-      // Do Bazy na pewno idzie current player, czas gry, ile ustrzelił celów
+
+      axios
+        .post(
+          "http://localhost:5000/newScoreRecord",
+          {
+            playerId: player,
+            score,
+            gameTime: ROUND_TIME,
+          },
+          {
+            withCredentials: true,
+            credentials: "include",
+          }
+        )
+        .then((response) => {
+          console.log("Score saved successfully:", response.data);
+        })
+        .catch((error) => {
+          console.error("There was an error saving the score:", error);
+        });
     }
   };
 
@@ -200,7 +220,7 @@ export default function GamePage() {
           <h3>
             {currentHit
               ? `Trafiono w: ${currentHit}`
-              : remainingTime > 0
+              : remainingTime === 0
               ? `Wynik gracza: ${playerScore}`
               : "Traf w cel!"}
           </h3>

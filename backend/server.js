@@ -10,6 +10,7 @@ const getSessionUser = require('./api/get-session-user');
 const listUserPlayers = require('./api/list-user-players');
 const getUserSettings = require('./api/get-user-settings');
 const updateUserSettings = require('./api/update-user-settings');
+const newScoreRecord = require('./api/new-score-record');
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.get('/getSessionUser', getSessionUser);
 
 app.post('/getUserSettings', getUserSettings);
 app.post('/updateUserSettings', updateUserSettings);
+app.post('/newScoreRecord', newScoreRecord);
 
 app.post('/getPlayers', async (req, res) => {
     try {
