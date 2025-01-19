@@ -74,6 +74,11 @@ export default function PlayPage({ sessionUser }) {
             ))}
           </select>
         </div>
+        <div className="mx-4">
+          <p className="text-left text-l font-bold text-gray-800">
+            Czas gry: <span className="font-normal">1 minuta</span>
+          </p>
+        </div>
         <div className="m-4">
           <button
             className="w-full px-4 py-2 text-black bg-green-500 rounded-md hover:bg-green-400 focus:ring-2 focus:ring-green-300"
