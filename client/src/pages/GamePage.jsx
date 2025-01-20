@@ -22,6 +22,7 @@ export default function GamePage() {
 
   const [client, setClient] = useState(null);
   const [connectStatus, setConnectStatus] = useState(null);
+  const [audioEnabled, setAudioEnabled] = useState(true);
 
   const [currentHit, setCurrentHit] = useState(null);
   const [playerScore, setPlayerScore] = useState(0);
@@ -130,6 +131,26 @@ export default function GamePage() {
   };
 
   useEffect(() => {
+    const fetchAudioSetting = async () => {
+      try {
+        const settingsResponse = await axios.post(
+          `http://localhost:5000/getUserSettings`,
+          {},
+          {
+            withCredentials: true,
+            credentials: "include",
+          }
+        );
+
+        if (settingsResponse) {
+          const { sound_enabled } = settingsResponse.data.settings;
+          setAudioEnabled(sound_enabled);
+        }
+      } catch (err) {}
+    };
+
+    fetchAudioSetting();
+
     if (!player) {
       navigate("play");
     } else if (!client) {
@@ -152,6 +173,16 @@ export default function GamePage() {
       mqttPublish({
         topic: "application/raspberry/gameStart",
         payload: "",
+        qos: 1,
+      });
+
+      let audioPayload = "turnOnSound";
+      if (!audioEnabled) {
+        audioPayload = "turnOffSound";
+      }
+      mqttPublish({
+        topic: "raspberry/WemosAll",
+        payload: audioPayload,
         qos: 1,
       });
     }
