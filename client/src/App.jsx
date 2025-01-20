@@ -9,6 +9,7 @@ import PlayersPage from "./pages/PlayersPage";
 import SettingsPage from "./pages/SettingsPage";
 import PlayPage from "./pages/PlayPage";
 import GamePage from "./pages/GamePage";
+import ScoreboardPage from "./pages/ScoreboardPage";
 
 function App() {
   const navigate = useNavigate();
@@ -60,6 +61,11 @@ function App() {
       <Route
         path="/settings"
         element={<SettingsPage sessionUser={sessionUser} />}
+      />
+
+      <Route
+        path="/scoreboard"
+        element={<ScoreboardPage sessionUser={sessionUser} />}
       />
     </Routes>
   );

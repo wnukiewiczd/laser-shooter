@@ -46,8 +46,7 @@ const DashboardPage = ({ sessionUser }) => {
     {
       id: 4,
       name: "Statystyki",
-      linkTo: "",
-      onClick: () => alert("Notifications clicked"),
+      linkTo: "/scoreboard",
     },
     { id: 5, name: "Wyloguj się", onClick: handleLogout },
   ];

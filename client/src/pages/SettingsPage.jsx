@@ -85,7 +85,7 @@ export default function SettingsPage() {
               className="mr-2 scale-150"
             />
           </div>
-          <div className="flex justify-between items-center">
+          {/* <div className="flex justify-between items-center">
             <label
               htmlFor="username"
               className="mb-2 text-lg font-medium text-gray-800"
@@ -100,7 +100,7 @@ export default function SettingsPage() {
               <option value="#00FF00">Zielony</option>
               <option value="#0000FF">Niebieski</option>
             </select>
-          </div>
+          </div> */}
           <button
             type="submit"
             className="w-full p-2 mt-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
