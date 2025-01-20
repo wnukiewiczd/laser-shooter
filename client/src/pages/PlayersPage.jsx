@@ -41,6 +41,24 @@ export default function PlayersPage({ sessionUser }) {
     }
   };
 
+  const deletePlayerFromDatabase = async (userId, playerName) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/deletePlayer",
+        {
+          user_id: userId,
+          playerName,
+        },
+        { withCredentials: true, credentials: "include" }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error.response || "Something went wrong");
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const loadPlayers = async () => {
       if (!sessionUser) {
@@ -60,11 +78,25 @@ export default function PlayersPage({ sessionUser }) {
   }, [sessionUser]);
 
   const handleNewPlayerAdd = async () => {
+    if (newPlayerName === "") return;
     setNewPlayerName("");
 
     try {
-      // Here add new player
-      const addPlayerResponse = await addNewPlayerToDatabase(sessionUser.id);
+      await addNewPlayerToDatabase(sessionUser.id);
+
+      const updatedPlayers = await fetchPlayers(sessionUser.id);
+      setPlayers(updatedPlayers);
+    } catch (error) {
+      console.error(
+        "Failed to update players list after adding new player",
+        error
+      );
+    }
+  };
+
+  const handlePlayerDelete = async (playerName) => {
+    try {
+      await deletePlayerFromDatabase(sessionUser.id, playerName);
 
       const updatedPlayers = await fetchPlayers(sessionUser.id);
       setPlayers(updatedPlayers);
@@ -90,9 +122,15 @@ export default function PlayersPage({ sessionUser }) {
           {players.map((player) => (
             <div
               key={player.id}
-              className="w-full px-4 py-2 text-gray-700 bg-blue-100 rounded-md"
+              className="w-full pl-4 text-gray-700 bg-blue-100 rounded-md flex items-center justify-between"
             >
-              {player.name}
+              <div>{player.name}</div>
+              <button
+                onClick={() => handlePlayerDelete(player.name)}
+                className="p-2 text-center bg-red-600 text-white"
+              >
+                Usuń
+              </button>
             </div>
           ))}
           <div className="w-full flex py-2 text-gray-700 rounded-md">
