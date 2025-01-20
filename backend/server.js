@@ -11,6 +11,9 @@ const listUserPlayers = require('./api/list-user-players');
 const getUserSettings = require('./api/get-user-settings');
 const updateUserSettings = require('./api/update-user-settings');
 const newScoreRecord = require('./api/new-score-record');
+const getScoreboardData = require('./api/get-scoreboard-data');
+const addPlayer = require('./api/add-player');
+const deletePlayer = require('./api/delete-player');
 
 const app = express();
 
@@ -50,6 +53,9 @@ app.get('/getSessionUser', getSessionUser);
 app.post('/getUserSettings', getUserSettings);
 app.post('/updateUserSettings', updateUserSettings);
 app.post('/newScoreRecord', newScoreRecord);
+app.post('/getScoreboardData', getScoreboardData);
+app.post('/addPlayer', addPlayer);
+app.post('/deletePlayer', deletePlayer);
 
 app.post('/getPlayers', async (req, res) => {
     try {
@@ -59,3 +65,4 @@ app.post('/getPlayers', async (req, res) => {
         return res.status(500).json({ message: 'Problem with players' });
     }
 });
+
